@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+
+{% block title %}System Management - Posture Monitoring{% endblock %}
+
+{% block content %}
+<div class="admin-analytics-container">
+    <div class="analytics-header">
+        <h1 data-i18n="system.title">🔧 System Management</h1>
+    </div>
+
+    <!-- System Health Monitoring Section -->
+    <div class="system-health-section">
+        <h2 class="section-title" data-i18n="system.health_monitoring">💻 System Health Monitoring</h2>
+        <div class="health-grid">
+            <!-- CPU Usage -->
+            <div class="health-card card">
+                <h3 data-i18n="system.cpu_usage">⚡ CPU Usage</h3>
+                <div class="metric-display">
+                    <div class="metric-value" id="cpuUsage">0%</div>
+                    <div class="metric-label" data-i18n="system.current_usage">Current Usage</div>
+                </div>
+                <div class="metric-bar">
+                    <div class="metric-bar-fill" id="cpuBar" style="width: 0%; background: #3b82f6;"></div>
+                </div>
+                <div class="metric-info" id="cpuCores">0 cores</div>
+            </div>
+            <!-- RAM Usage -->
+            <div class="health-card card">
+                <h3 data-i18n="system.memory_usage">🧠 Memory Usage</h3>
+                <div class="metric-display">
+                    <div class="metric-value" id="ramUsage">0%</div>
+                    <div class="metric-label" data-i18n="system.current_usage">Current Usage</div>
+                </div>
+                <div class="metric-bar">
+                    <div class="metric-bar-fill" id="ramBar" style="width: 0%; background: #10b981;"></div>
+                </div>
+                <div class="metric-info" id="ramInfo">0 GB / 0 GB</div>
+            </div>
+            <!-- CPU Temperature -->
+            <div class="health-card card">
+                <h3 data-i18n="system.cpu_temperature">🌡️ CPU Temperature</h3>
+                <div class="metric-display">
+                    <div class="metric-value" id="cpuTemp">0°C</div>
+                    <div class="metric-label">Current Temperature</div>
+                </div>
+                <div class="metric-bar">
+                    <div class="metric-bar-fill" id="tempBar" style="width: 0%; background: #f59e0b;"></div>
+                </div>
+                <div class="metric-info" id="tempInfo">Normal</div>
+            </div>
+            <!-- Disk Usage -->
+            <div class="health-card card">
+                <h3 data-i18n="system.disk_usage">💾 Disk Usage</h3>
+                <div class="metric-display">
+                    <div class="metric-value" id="diskUsage">0%</div>
+                    <div class="metric-label">Current Usage</div>
+                </div>
+                <div class="metric-bar">
+                    <div class="metric-bar-fill" id="diskBar" style="width: 0%; background: #8b5cf6;"></div>
+                </div>
+                <div class="metric-info" id="diskInfo">0 GB / 0 GB</div>
+            </div>
+
+            <!-- Battery Status -->
+            <div class="health-card card">
+                <h3 data-i18n="system.battery_device">🔋 Battery Device</h3>
+                <div class="metric-display">
+                    <div class="metric-value" id="batteryPercentage">0%</div>
+                    <div class="metric-label" id="batteryVoltage">0.00V</div>
+                </div>
+                <div class="metric-bar">
+                    <div class="metric-bar-fill" id="batteryLevel" style="width: 0%; background: #10b981;"></div>
+                </div>
+                <div class="metric-info">
+                    <span id="batteryLevelBadge" class="badge">Unknown</span>
+                </div>
+                <div class="metric-update">
+                    <small id="batteryLastUpdate">Never</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Data Management Section -->
+    <div class="data-management-section">
+        <h2 class="section-title" data-i18n="system.data_management">🛠️ Data Management</h2>
+
+        <!-- Database Stats -->
+        <div class="db-stats-card card">
+            <h3 data-i18n="system.database_statistics">📊 Database Statistics</h3>
+            <div class="stats-row">
+                <div class="stat-item">
+                    <div class="stat-number" id="dbTotalLogs">0</div>
+                    <div class="stat-label" data-i18n="system.total_logs">Total Logs</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="dbOldLogs">0</div>
+                    <div class="stat-label" data-i18n="system.logs_30_days">Logs >30 days</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="dbDaysOfData">0</div>
+                    <div class="stat-label" data-i18n="system.days_of_data">Days of Data</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cleanup Suggestions -->
+        <div id="cleanupSuggestions" class="suggestions-container"></div>
+
+        <!-- Cleanup Actions -->
+        <div class="cleanup-actions-grid">
+            <div class="cleanup-card card">
+                <h3 data-i18n="system.clear_old_logs">🗑️ Clear Old Logs</h3>
+                <p data-i18n="system.clear_old_logs_desc">Delete logs older than specified days</p>
+                <div class="cleanup-input">
+                    <label for="daysToKeep" data-i18n="system.days_to_keep">Days to keep:</label>
+                    <input type="number" id="daysToKeep" value="30" min="1" max="365">
+                </div>
+                <button id="clearOldLogsBtn" class="btn-warning" onclick="confirmCleanup('clear_old')"
+                    data-i18n="system.clear_old_logs_btn">Clear Old Logs</button>
+            </div>
+
+            <div class="cleanup-card card">
+                <h3 data-i18n="system.clear_all_logs">💥 Clear All Logs</h3>
+                <p data-i18n="system.clear_all_logs_desc">Delete ALL posture detection logs</p>
+                <p class="warning-text" data-i18n="system.clear_all_logs_warning">⚠️ This action cannot be undone!</p>
+                <button class="btn-danger" onclick="confirmCleanup('clear_all')">Clear All Logs</button>
+            </div>
+
+            <div class="cleanup-card card">
+                <h3 data-i18n="system.clear_statistics">📈 Clear Statistics</h3>
+                <p data-i18n="system.clear_statistics_desc">Delete all daily statistics data</p>
+                <p class="warning-text" data-i18n="system.clear_statistics_warning">⚠️ Charts will be empty!</p>
+                <button class="btn-danger" onclick="confirmCleanup('clear_stats')">Clear Statistics</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Cleanup Confirmation Modal -->
+<div class="modal" id="cleanupModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>⚠️ Confirm Data Cleanup</h2>
+            <button class="modal-close" onclick="closeCleanupModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p id="cleanupMessage"></p>
+            <div class="confirmation-input">
+                <label>
+                    <input type="checkbox" id="confirmCleanup">
+                    I understand this action cannot be undone
+                </label>
+            </div>
+        </div>
+        <div class="modal-actions">
+            <button class="btn-secondary" onclick="closeCleanupModal()">Cancel</button>
+            <button class="btn-danger" id="confirmCleanupBtn" disabled onclick="executeCleanup()">Confirm
+                Delete</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/system_management.js') }}?v=fixed"></script>
+{% endblock %}

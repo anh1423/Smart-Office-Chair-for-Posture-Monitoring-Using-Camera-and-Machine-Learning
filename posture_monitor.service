@@ -1,0 +1,28 @@
+[Unit]
+Description=Posture Monitoring Webserver
+After=network.target mariadb.service
+Wants=mariadb.service
+
+[Service]
+Type=simple
+User=pi
+Group=pi
+WorkingDirectory=/home/pi/DATN/webserver
+Environment="PATH=/home/pi/DATN/webserver/venv/bin"
+ExecStart=/home/pi/DATN/webserver/venv/bin/python app.py
+
+# Restart policy
+Restart=always
+RestartSec=10
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=posture-monitor
+
+# Security
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

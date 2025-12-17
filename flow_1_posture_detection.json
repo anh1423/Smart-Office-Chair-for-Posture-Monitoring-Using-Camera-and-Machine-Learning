@@ -1,0 +1,145 @@
+[
+    {
+        "id": "31dcb45e7e8a44dd",
+        "type": "tab",
+        "label": "Posture Detection",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "d3ee3c812b340e0b",
+        "type": "mqtt in",
+        "z": "31dcb45e7e8a44dd",
+        "name": "ESP32 Sensor Data",
+        "topic": "esp32/fsrsensor",
+        "qos": "0",
+        "datatype": "json",
+        "broker": "mqtt_broker",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 250,
+        "y": 160,
+        "wires": [
+            [
+                "b6de825cfed27df0"
+            ]
+        ]
+    },
+    {
+        "id": "b6de825cfed27df0",
+        "type": "function",
+        "z": "31dcb45e7e8a44dd",
+        "name": "Prepare API Request",
+        "func": "// msg.payload đã là JSON object từ ESP32\n// Ví dụ: {\"sensor1\": 100, \"sensor2\": 150, ...}\n\n// Log để debug\nnode.warn(\"Received sensor data: \" + JSON.stringify(msg.payload));\n\n// Chuyển tiếp trực tiếp\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 480,
+        "y": 160,
+        "wires": [
+            [
+                "afc6fee4bd2296cb"
+            ]
+        ]
+    },
+    {
+        "id": "afc6fee4bd2296cb",
+        "type": "http request",
+        "z": "31dcb45e7e8a44dd",
+        "name": "POST to Webserver",
+        "method": "POST",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "http://localhost:5000/api/predict",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [
+            {
+                "keyType": "other",
+                "keyValue": "X-API-Key",
+                "valueType": "other",
+                "valueValue": "ccd3025f526778587f099066700bba29671c9cd063a4b543af6e626e618374dd"
+            }
+        ],
+        "x": 720,
+        "y": 160,
+        "wires": [
+            [
+                "d60772125c1ae1f6"
+            ]
+        ]
+    },
+    {
+        "id": "d60772125c1ae1f6",
+        "type": "function",
+        "z": "31dcb45e7e8a44dd",
+        "name": "Parse Response",
+        "func": "// msg.payload từ webserver\n// {\"label\": \"Correct_posture\", \"confidence\": 0.95, \"warning\": false, ...}\n\nvar result = {\n    label: msg.payload.label,\n    warning: msg.payload.warning,\n    confidence: msg.payload.confidence,\n    mode: msg.payload.mode\n};\n\n// Log để debug\nnode.warn(\"Prediction result: \" + JSON.stringify(result));\n\nmsg.payload = result;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 950,
+        "y": 160,
+        "wires": [
+            [
+                "a429d4cd353ac373"
+            ]
+        ]
+    },
+    {
+        "id": "a429d4cd353ac373",
+        "type": "mqtt out",
+        "z": "31dcb45e7e8a44dd",
+        "name": "Send to ESP32",
+        "topic": "esp32/recognitionresult",
+        "qos": "0",
+        "retain": "false",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "mqtt_broker",
+        "x": 1200,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "mqtt_broker",
+        "type": "mqtt-broker",
+        "name": "Local MQTT Broker",
+        "broker": "192.168.101.192",
+        "port": "1883",
+        "clientid": "nodered_client",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": 4,
+        "keepalive": 15,
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    }
+]

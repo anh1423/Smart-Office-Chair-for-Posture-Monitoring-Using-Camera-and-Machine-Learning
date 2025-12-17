@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - PosturePerfect</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="login-container">
+        <!-- Left Panel: Branding -->
+        <div class="branding-panel">
+            <div class="branding-content">
+                <div class="logo-icon">
+                    <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="40" cy="20" r="8" fill="#007AFF" />
+                        <path d="M40 28 L40 50 M40 35 L25 45 M40 35 L55 45 M40 50 L30 70 M40 50 L50 70" stroke="#007AFF"
+                            stroke-width="4" stroke-linecap="round" />
+                    </svg>
+                </div>
+                <h1 class="brand-name">PosturePerfect</h1>
+                <p class="brand-tagline">Improve your posture, improve your life. Take control of your well-being with
+                    real-time monitoring and guidance.</p>
+            </div>
+        </div>
+
+        <!-- Right Panel: Login Form -->
+        <div class="form-panel">
+            <div class="form-content">
+                <h2 class="form-title">Welcome Back</h2>
+                <p class="form-subtitle">Log in to monitor your posture.</p>
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+                {% endif %}
+                {% endwith %}
+
+                <form method="POST" action="{{ url_for('auth.login') }}" class="login-form" id="loginForm">
+                    <div class="form-group">
+                        <label for="username">Email / Username</label>
+                        <div class="input-wrapper">
+                            <svg class="input-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <path
+                                    d="M10 10C12.21 10 14 8.21 14 6C14 3.79 12.21 2 10 2C7.79 2 6 3.79 6 6C6 8.21 7.79 10 10 10ZM10 12C7.33 12 2 13.34 2 16V18H18V16C18 13.34 12.67 12 10 12Z"
+                                    fill="#9CA3AF" />
+                            </svg>
+                            <input type="text" id="username" name="username" placeholder="Enter your email or username"
+                                required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <div class="input-wrapper">
+                            <svg class="input-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <path
+                                    d="M15 7H14V5C14 2.79 12.21 1 10 1C7.79 1 6 2.79 6 5V7H5C3.9 7 3 7.9 3 9V17C3 18.1 3.9 19 5 19H15C16.1 19 17 18.1 17 17V9C17 7.9 16.1 7 15 7ZM10 14C8.9 14 8 13.1 8 12C8 10.9 8.9 10 10 10C11.1 10 12 10.9 12 12C12 13.1 11.1 14 10 14ZM11.1 7H8.9V5C8.9 4.39 9.39 3.9 10 3.9C10.61 3.9 11.1 4.39 11.1 5V7Z"
+                                    fill="#9CA3AF" />
+                            </svg>
+                            <input type="password" id="password" name="password" placeholder="Enter your password"
+                                required>
+                            <button type="button" class="password-toggle" id="passwordToggle">
+                                <svg class="eye-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                    <path
+                                        d="M10 4C5 4 1.73 7.11 1 10C1.73 12.89 5 16 10 16C15 16 18.27 12.89 19 10C18.27 7.11 15 4 10 4ZM10 14C7.79 14 6 12.21 6 10C6 7.79 7.79 6 10 6C12.21 6 14 7.79 14 10C14 12.21 12.21 14 10 14ZM10 8C8.9 8 8 8.9 8 10C8 11.1 8.9 12 10 12C11.1 12 12 11.1 12 10C12 8.9 11.1 8 10 8Z"
+                                        fill="#9CA3AF" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-options">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="remember">
+                            <span>Remember me</span>
+                        </label>
+                    </div>
+
+                    <button type="submit" class="btn-login">Login</button>
+
+                    <p class="signup-text">
+                        Don't have an account? <a href="{{ url_for('auth.signup_page') }}" class="signup-link">Sign
+                            Up</a>
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/login.js') }}"></script>
+</body>
+
+</html>

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Posture Monitoring System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>🪑 Posture Monitoring System</h1>
+            <div class="status-indicator">
+                <span class="status-dot" id="statusDot"></span>
+                <span id="statusText">Connecting...</span>
+            </div>
+        </header>
+
+        <!-- Main Content Grid -->
+        <div class="main-grid">
+            <!-- Left Column: Video Stream -->
+            <div class="video-section card">
+                <h2>📹 Live Camera</h2>
+                <div class="video-container">
+                    <img id="videoStream" src="{{ url_for('api.video_feed') }}" alt="Camera Stream">
+                    <div class="video-overlay" id="videoOverlay">
+                        <p>Loading camera...</p>
+                    </div>
+                </div>
+                <div class="camera-info">
+                    <span id="cameraStatus">Camera: Checking...</span>
+                </div>
+            </div>
+
+            <!-- Right Column: Controls and Stats -->
+            <div class="right-column">
+                <!-- Mode Selection -->
+                <div class="mode-section card">
+                    <h2>⚙️ Detection Mode</h2>
+                    <div class="mode-options">
+                        <label class="mode-option">
+                            <input type="radio" name="mode" value="sensor_only">
+                            <div class="mode-card">
+                                <div class="mode-icon">📊</div>
+                                <h3>Sensor Only</h3>
+                                <p>Use only 7 pressure sensors</p>
+                            </div>
+                        </label>
+                        <label class="mode-option">
+                            <input type="radio" name="mode" value="camera_only">
+                            <div class="mode-card">
+                                <div class="mode-icon">📷</div>
+                                <h3>Camera Only</h3>
+                                <p>Use only camera for detection</p>
+                            </div>
+                        </label>
+                        <label class="mode-option">
+                            <input type="radio" name="mode" value="auto" checked>
+                            <div class="mode-card">
+                                <div class="mode-icon">🎯</div>
+                                <h3>Auto Smart</h3>
+                                <p>Sensor first, camera when needed</p>
+                            </div>
+                        </label>
+                        <label class="mode-option">
+                            <input type="radio" name="mode" value="fusion">
+                            <div class="mode-card">
+                                <div class="mode-icon">🔄</div>
+                                <h3>Fusion</h3>
+                                <p>Combine sensor and camera</p>
+                            </div>
+                        </label>
+                    </div>
+
+                    <button id="saveConfigBtn" class="btn-primary">
+                        💾 Save Configuration
+                    </button>
+                </div>
+
+                <!-- Current Status -->
+                <div class="status-section card">
+                    <h2>📍 Current Status</h2>
+                    <div class="current-posture">
+                        <div class="posture-label" id="currentPosture">Waiting for data...</div>
+                        <div class="posture-confidence" id="currentConfidence">--%</div>
+                    </div>
+                    <div class="last-update">
+                        Last update: <span id="lastUpdate">--:--:--</span>
+                    </div>
+                </div>
+
+                <!-- Alerts -->
+                <div class="alerts-section card" id="alertsSection" style="display: none;">
+                    <h2>⚠️ Warning</h2>
+                    <div class="alert-message" id="alertMessage">
+                        Bad posture detected!
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Section -->
+        <div class="stats-section">
+            <div class="card stats-card">
+                <h2>📊 Today's Statistics</h2>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-value" id="totalDetections">0</div>
+                        <div class="stat-label">Total Detections</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="correctPercentage">0%</div>
+                        <div class="stat-label">Correct Posture Rate</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="totalWarnings">0</div>
+                        <div class="stat-label">Warnings</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="badPostureCount">0</div>
+                        <div class="stat-label">Bad Postures</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card chart-card">
+                <h2>📈 Posture Distribution</h2>
+                <canvas id="postureChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <!-- Main JavaScript -->
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+</body>
+
+</html>

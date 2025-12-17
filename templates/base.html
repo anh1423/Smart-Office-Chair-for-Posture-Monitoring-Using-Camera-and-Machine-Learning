@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Posture Monitoring System{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="main-header">
+        <div class="header-left">
+            <div class="logo">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="16" cy="8" r="3" fill="#8b5cf6" />
+                    <path d="M16 11 L16 20 M16 14 L10 18 M16 14 L22 18 M16 20 L13 28 M16 20 L19 28" stroke="#8b5cf6"
+                        stroke-width="2" stroke-linecap="round" />
+                </svg>
+                <span class="logo-text">Posture Monitoring System</span>
+            </div>
+        </div>
+
+        <nav class="header-nav">
+            <a href="{{ url_for('dashboard') }}"
+                class="nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <path d="M3 10L10 3L17 10M5 8V17H8V13H12V17H15V8" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                <span data-i18n="nav.dashboard">Dashboard</span>
+            </a>
+            <a href="{{ url_for('analytics') }}"
+                class="nav-link {% if request.endpoint == 'analytics' %}active{% endif %}">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <path d="M3 17V7M10 17V3M17 17V11" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                </svg>
+                <span data-i18n="nav.analytics">Analytics</span>
+            </a>
+            {% if current_user.role == 'admin' %}
+            <a href="{{ url_for('admin_analytics.admin_analytics_page') }}"
+                class="nav-link {% if request.endpoint == 'admin_analytics.admin_analytics_page' %}active{% endif %}">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <path d="M3 3V17H17" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                    <path d="M7 13L10 9L13 11L17 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                    <circle cx="7" cy="13" r="1.5" fill="currentColor" />
+                    <circle cx="10" cy="9" r="1.5" fill="currentColor" />
+                    <circle cx="13" cy="11" r="1.5" fill="currentColor" />
+                    <circle cx="17" cy="6" r="1.5" fill="currentColor" />
+                </svg>
+                <span data-i18n="nav.advanced_analytics">Advanced Analytics</span>
+            </a>
+            <a href="{{ url_for('system_mgmt.system_management') }}"
+                class="nav-link {% if request.endpoint == 'system_mgmt.system_management' %}active{% endif %}">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <path d="M10 2L2 7V17H8V12H12V17H18V7L10 2Z" stroke="currentColor" stroke-width="2"
+                        stroke-linejoin="round" />
+                    <circle cx="10" cy="10" r="1.5" fill="currentColor" />
+                </svg>
+                <span data-i18n="nav.system_management">System Management</span>
+            </a>
+            <a href="{{ url_for('users.users_page') }}"
+                class="nav-link {% if request.endpoint == 'users.users_page' %}active{% endif %}">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <path
+                        d="M7 8C8.65685 8 10 6.65685 10 5C10 3.34315 8.65685 2 7 2C5.34315 2 4 3.34315 4 5C4 6.65685 5.34315 8 7 8Z"
+                        stroke="currentColor" stroke-width="2" />
+                    <path
+                        d="M14 8C15.1046 8 16 7.10457 16 6C16 4.89543 15.1046 4 14 4C12.8954 4 12 4.89543 12 6C12 7.10457 12.8954 8 14 8Z"
+                        stroke="currentColor" stroke-width="2" />
+                    <path d="M11 14C11 11.79 9.21 10 7 10C4.79 10 3 11.79 3 14V16H11V14Z" stroke="currentColor"
+                        stroke-width="2" />
+                    <path d="M17 16V14C17 12.34 15.66 11 14 11C13.5 11 13.03 11.11 12.6 11.3" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" />
+                </svg>
+                <span data-i18n="nav.users">Users</span>
+            </a>
+            <a href="{{ url_for('manage_api_keys') }}"
+                class="nav-link {% if request.endpoint == 'manage_api_keys' %}active{% endif %}">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <path
+                        d="M10 2C8.34315 2 7 3.34315 7 5C7 6.65685 8.34315 8 10 8C11.6569 8 13 6.65685 13 5C13 3.34315 11.6569 2 10 2Z"
+                        stroke="currentColor" stroke-width="2" />
+                    <path d="M10 8V12M10 12L6 14M10 12L14 14" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" />
+                    <rect x="3" y="14" width="4" height="4" rx="1" stroke="currentColor" stroke-width="2" />
+                    <rect x="13" y="14" width="4" height="4" rx="1" stroke="currentColor" stroke-width="2" />
+                </svg>
+                <span data-i18n="nav.api_keys">API Keys</span>
+            </a>
+            {% endif %}
+        </nav>
+
+        <div class="header-right">
+            <div class="system-status">
+                <span class="status-dot"></span>
+                <span class="status-text" data-i18n="header.system_online">System Online</span>
+            </div>
+
+            <!-- Theme Toggle -->
+            <button class="theme-toggle" id="themeToggle" title="Toggle theme">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <circle cx="10" cy="10" r="3" stroke="currentColor" stroke-width="2" />
+                    <path
+                        d="M10 2V4M10 16V18M18 10H16M4 10H2M15.66 15.66L14.24 14.24M5.76 5.76L4.34 4.34M15.66 4.34L14.24 5.76M5.76 14.24L4.34 15.66"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                </svg>
+            </button>
+
+            <!-- Language Toggle -->
+            <button class="language-toggle" id="languageToggle" title="Switch language">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <rect width="20" height="20" rx="2" fill="#DA251D" />
+                    <path d="M10 4L11.5 8.5H16L12.5 11.5L14 16L10 13L6 16L7.5 11.5L4 8.5H8.5L10 4Z" fill="#FFFF00" />
+                </svg>
+            </button>
+
+            <div class="user-menu">
+                <button class="user-button" id="userMenuButton">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <circle cx="12" cy="8" r="4" stroke="white" stroke-width="2" />
+                        <path d="M6 21C6 17.134 8.686 14 12 14C15.314 14 18 17.134 18 21" stroke="white"
+                            stroke-width="2" stroke-linecap="round" />
+                    </svg>
+                </button>
+                <div class="user-dropdown" id="userDropdown">
+                    <div class="dropdown-header">
+                        <p class="user-name">{{ current_user.username }}</p>
+                        <p class="user-email">{{ current_user.email or 'No email' }}</p>
+                    </div>
+                    <div class="dropdown-divider"></div>
+                    <a href="{{ url_for('auth.logout') }}" class="dropdown-item">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                            <path
+                                d="M6 14H3C2.44772 14 2 13.5523 2 13V3C2 2.44772 2.44772 2 3 2H6M11 11L14 8M14 8L11 5M14 8H6"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        <span data-i18n="header.logout">Logout</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Common JavaScript -->
+    <!-- Theme and Language Scripts (must load before other scripts) -->
+    <script src="{{ url_for('static', filename='js/translations.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/language.js') }}"></script>
+    <script>
+        // User menu dropdown functionality
+        document.getElementById('userMenuButton')?.addEventListener('click', function (e) {
+            e.stopPropagation();
+            document.getElementById('userDropdown').classList.toggle('show');
+        });
+
+        // Close dropdown when clicking outside
+        window.addEventListener('click', function (e) {
+            if (!e.target.matches('.user-button') && !e.target.closest('.user-button')) {
+                var dropdown = document.getElementById('userDropdown');
+                if (dropdown && dropdown.classList.contains('show')) {
+                    dropdown.classList.remove('show');
+                }
+            }
+        });
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+
+</html>

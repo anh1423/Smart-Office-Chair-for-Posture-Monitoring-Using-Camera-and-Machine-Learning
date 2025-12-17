@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Documentation - Posture Monitoring System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 1.8em;
+            color: #667eea;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .endpoint {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .endpoint:hover {
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .method {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 0.9em;
+            margin-right: 10px;
+        }
+
+        .method.post {
+            background: #28a745;
+            color: white;
+        }
+
+        .method.get {
+            background: #007bff;
+            color: white;
+        }
+
+        .method.delete {
+            background: #dc3545;
+            color: white;
+        }
+
+        .method.patch {
+            background: #ffc107;
+            color: black;
+        }
+
+        .endpoint-path {
+            font-family: 'Courier New', monospace;
+            font-size: 1.1em;
+            color: #333;
+            display: inline-block;
+        }
+
+        .endpoint-desc {
+            margin-top: 10px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .auth-required {
+            display: inline-block;
+            background: #ff6b6b;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 3px;
+            font-size: 0.85em;
+            margin-left: 10px;
+        }
+
+        .auth-optional {
+            display: inline-block;
+            background: #51cf66;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 3px;
+            font-size: 0.85em;
+            margin-left: 10px;
+        }
+
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin-top: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        .code-block pre {
+            margin: 0;
+        }
+
+        .params {
+            margin-top: 15px;
+        }
+
+        .param-title {
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .param-item {
+            background: white;
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 5px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .param-name {
+            font-family: 'Courier New', monospace;
+            color: #e83e8c;
+            font-weight: bold;
+        }
+
+        .param-type {
+            color: #28a745;
+            font-size: 0.9em;
+            margin-left: 10px;
+        }
+
+        .param-required {
+            color: #dc3545;
+            font-size: 0.85em;
+            margin-left: 10px;
+        }
+
+        .api-key-box {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .api-key-box h3 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+
+        .api-key-box code {
+            background: #fff;
+            padding: 5px 10px;
+            border-radius: 5px;
+            color: #d63384;
+            font-weight: bold;
+        }
+
+        .try-it-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .try-it-btn:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .response-example {
+            margin-top: 15px;
+        }
+
+        .tab-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .tab-btn {
+            padding: 8px 16px;
+            background: #e9ecef;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .footer {
+            background: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            color: #666;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📚 API Documentation</h1>
+            <p>Posture Monitoring System - REST API Reference</p>
+        </div>
+
+        <div class="content">
+            <!-- API Key Section -->
+            <div class="api-key-box">
+                <h3>🔑 Authentication</h3>
+                <p>Most endpoints require an API key. Add the following header to your requests:</p>
+                <div class="code-block">
+                    <pre>X-API-Key: your-api-key-here</pre>
+                </div>
+                <p style="margin-top: 10px;">To generate a new API key, run: <code>python3 generate_api_key.py</code>
+                </p>
+            </div>
+
+            <!-- Posture Detection -->
+            <div class="section">
+                <h2 class="section-title">🧘 Posture Detection</h2>
+
+                <div class="endpoint">
+                    <div>
+                        <span class="method post">POST</span>
+                        <span class="endpoint-path">/api/predict</span>
+                        <span class="auth-required">🔒 API Key Required</span>
+                    </div>
+                    <p class="endpoint-desc">Receives data from 7 FSR sensors and returns posture recognition result.
+                    </p>
+
+                    <div class="params">
+                        <div class="param-title">Request Body (JSON):</div>
+                        <div class="param-item">
+                            <span class="param-name">sensor1</span>
+                            <span class="param-type">float</span>
+                            <span class="param-required">required</span>
+                            <div>Sensor 1 value</div>
+                        </div>
+                        <div class="param-item">
+                            <span class="param-name">sensor2</span>
+                            <span class="param-type">float</span>
+                            <span class="param-required">required</span>
+                            <div>Sensor 2 value</div>
+                        </div>
+                        <div class="param-item">
+                            <span class="param-name">sensor3...sensor7</span>
+                            <span class="param-type">float</span>
+                            <span class="param-required">required</span>
+                            <div>Remaining sensor values</div>
+                        </div>
+                    </div>
+
+                    <div class="response-example">
+                        <div class="param-title">Example Request:</div>
+                        <div class="code-block">
+                            <pre>curl -X POST http://localhost:5000/api/predict \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: your-api-key-here" \
+  -d '{
+    "sensor1": 100,
+    "sensor2": 150,
+    "sensor3": 120,
+    "sensor4": 180,
+    "sensor5": 95,
+    "sensor6": 110,
+    "sensor7": 140
+  }'</pre>
+                        </div>
+                    </div>
+
+                    <div class="response-example">
+                        <div class="param-title">Response (200 OK):</div>
+                        <div class="code-block">
+                            <pre>{
+  "label": "Correct_posture",
+  "confidence": 0.95,
+  "warning": false,
+  "mode": "auto",
+  "timestamp": "2025-12-17T12:30:00",
+  "metadata": {
+    "camera_used": false,
+    "sensor_confidence": 0.95
+  }
+}</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="endpoint">
+                    <div>
+                        <span class="method get">GET</span>
+                        <span class="endpoint-path">/api/latest</span>
+                        <span class="auth-optional">🔓 Public</span>
+                    </div>
+                    <p class="endpoint-desc">Get the latest posture recognition result.</p>
+
+                    <div class="response-example">
+                        <div class="param-title">Response (200 OK):</div>
+                        <div class="code-block">
+                            <pre>{
+  "posture": "Correct_posture",
+  "confidence": 0.95,
+  "timestamp": "2025-12-17T12:30:00",
+  "warning": false,
+  "mode": "auto"
+}</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Battery Monitoring -->
+            <div class="section">
+                <h2 class="section-title">🔋 Battery Monitoring</h2>
+
+                <div class="endpoint">
+                    <div>
+                        <span class="method post">POST</span>
+                        <span class="endpoint-path">/api/battery</span>
+                        <span class="auth-required">🔒 API Key Required</span>
+                    </div>
+                    <p class="endpoint-desc">Receive battery data from ESP32 and save to database.</p>
+
+                    <div class="params">
+                        <div class="param-title">Request Body (JSON):</div>
+                        <div class="param-item">
+                            <span class="param-name">voltage</span>
+                            <span class="param-type">float</span>
+                            <span class="param-required">required</span>
+                            <div>Battery voltage (V)</div>
+                        </div>
+                        <div class="param-item">
+                            <span class="param-name">percentage</span>
+                            <span class="param-type">float</span>
+                            <span class="param-required">required</span>
+                            <div>Battery percentage (0-100)</div>
+                        </div>
+                        <div class="param-item">
+                            <span class="param-name">level</span>
+                            <span class="param-type">string</span>
+                            <span class="param-required">required</span>
+                            <div>Battery level: critical, low, medium, high</div>
+                        </div>
+                    </div>
+
+                    <div class="response-example">
+                        <div class="param-title">Example Request:</div>
+                        <div class="code-block">
+                            <pre>curl -X POST http://localhost:5000/api/battery \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: your-api-key-here" \
+  -d '{
+    "voltage": 3.85,
+    "percentage": 70.8,
+    "level": "medium"
+  }'</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="endpoint">
+                    <div>
+                        <span class="method get">GET</span>
+                        <span class="endpoint-path">/api/battery/latest</span>
+                        <span class="auth-required">🔒 Login Required</span>
+                    </div>
+                    <p class="endpoint-desc">Get latest battery information.</p>
+                </div>
+
+                <div class="endpoint">
+                    <div>
+                        <span class="method get">GET</span>
+                        <span class="endpoint-path">/api/battery/history?hours=24</span>
+                        <span class="auth-required">🔒 Login Required</span>
+                    </div>
+                    <p class="endpoint-desc">Get battery history for the last N hours.</p>
+                </div>
+            </div>
+
+            <!-- Configuration -->
+            <div class="section">
+                <h2 class="section-title">⚙️ Configuration</h2>
+
+                <div class="endpoint">
+                    <div>
+                        <span class="method get">GET</span>
+                        <span class="endpoint-path">/api/config</span>
+                        <span class="auth-required">🔒 Login Required</span>
+                    </div>
+                    <p class="endpoint-desc">Get current system configuration.</p>
+
+                    <div class="response-example">
+                        <div class="param-title">Response (200 OK):</div>
+                        <div class="code-block">
+                            <pre>{
+  "mode": "auto",
+  "auto_threshold": 0.70,
+  "fusion_weights": {
+    "sensor": 0.4,
+    "camera": 0.6
+  },
+  "warning_threshold": 3,
+  "warning_time_limit": 300
+}</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="endpoint">
+                    <div>
+                        <span class="method post">POST</span>
+                        <span class="endpoint-path">/api/config</span>
+                        <span class="auth-required">🔒 Login Required</span>
+                    </div>
+                    <p class="endpoint-desc">Update system configuration.</p>
+                </div>
+            </div>
+
+            <!-- Statistics -->
+            <div class="section">
+                <h2 class="section-title">📊 Statistics</h2>
+
+                <div class="endpoint">
+                    <div>
+                        <span class="method get">GET</span>
+                        <span class="endpoint-path">/api/stats?date=2025-12-17</span>
+                        <span class="auth-required">🔒 Login Required</span>
+                    </div>
+                    <p class="endpoint-desc">Get statistics for a specific date.</p>
+                </div>
+
+                <div class="endpoint">
+                    <div>
+                        <span class="method get">GET</span>
+                        <span class="endpoint-path">/api/stats/range?start_date=2025-12-01&end_date=2025-12-17</span>
+                        <span class="auth-required">🔒 Login Required</span>
+                    </div>
+                    <p class="endpoint-desc">Get statistics for a date range.</p>
+                </div>
+            </div>
+
+            <!-- System -->
+            <div class="section">
+                <h2 class="section-title">🔧 System</h2>
+
+                <div class="endpoint">
+                    <div>
+                        <span class="method get">GET</span>
+                        <span class="endpoint-path">/api/health</span>
+                        <span class="auth-optional">🔓 Public</span>
+                    </div>
+                    <p class="endpoint-desc">Check system health status.</p>
+
+                    <div class="response-example">
+                        <div class="param-title">Response (200 OK):</div>
+                        <div class="code-block">
+                            <pre>{
+  "status": "ok",
+  "timestamp": "2025-12-17T12:30:00",
+  "components": {
+    "database": "ok",
+    "camera": "ok",
+    "sensor_model": "ok",
+    "camera_model": "ok"
+  }
+}</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="endpoint">
+                    <div>
+                        <span class="method get">GET</span>
+                        <span class="endpoint-path">/api/camera/status</span>
+                        <span class="auth-optional">🔓 Public</span>
+                    </div>
+                    <p class="endpoint-desc">Check camera status.</p>
+                </div>
+
+                <div class="endpoint">
+                    <div>
+                        <span class="method get">GET</span>
+                        <span class="endpoint-path">/api/video_feed</span>
+                        <span class="auth-optional">🔓 Public</span>
+                    </div>
+                    <p class="endpoint-desc">MJPEG video stream from camera.</p>
+                </div>
+            </div>
+
+            <!-- Admin API Keys -->
+            <div class="section">
+                <h2 class="section-title">🔐 Admin - API Key Management</h2>
+
+                <div class="endpoint">
+                    <div>
+                        <span class="method get">GET</span>
+                        <span class="endpoint-path">/api/admin/api-keys</span>
+                        <span class="auth-required">🔒 Admin Only</span>
+                    </div>
+                    <p class="endpoint-desc">List all API keys.</p>
+                </div>
+
+                <div class="endpoint">
+                    <div>
+                        <span class="method post">POST</span>
+                        <span class="endpoint-path">/api/admin/api-keys</span>
+                        <span class="auth-required">🔒 Admin Only</span>
+                    </div>
+                    <p class="endpoint-desc">Create a new API key.</p>
+
+                    <div class="params">
+                        <div class="param-title">Request Body (JSON):</div>
+                        <div class="param-item">
+                            <span class="param-name">name</span>
+                            <span class="param-type">string</span>
+                            <span class="param-required">required</span>
+                            <div>Descriptive name for the API key</div>
+                        </div>
+                    </div>
+
+                    <div class="response-example">
+                        <div class="param-title">Example Request:</div>
+                        <div class="code-block">
+                            <pre>curl -X POST http://localhost:5000/api/admin/api-keys \
+  -H "Content-Type: application/json" \
+  -b cookies.txt \
+  -d '{"name": "Node-RED Production"}'</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="endpoint">
+                    <div>
+                        <span class="method delete">DELETE</span>
+                        <span class="endpoint-path">/api/admin/api-keys/{id}</span>
+                        <span class="auth-required">🔒 Admin Only</span>
+                    </div>
+                    <p class="endpoint-desc">Delete an API key.</p>
+                </div>
+
+                <div class="endpoint">
+                    <div>
+                        <span class="method patch">PATCH</span>
+                        <span class="endpoint-path">/api/admin/api-keys/{id}/revoke</span>
+                        <span class="auth-required">🔒 Admin Only</span>
+                    </div>
+                    <p class="endpoint-desc">Revoke (disable) an API key.</p>
+                </div>
+            </div>
+
+            <!-- Error Codes -->
+            <div class="section">
+                <h2 class="section-title">⚠️ Error Codes</h2>
+                <div class="endpoint">
+                    <div class="param-title">Common HTTP Status Codes:</div>
+                    <div class="param-item">
+                        <span class="param-name">200 OK</span>
+                        <div>Request successful</div>
+                    </div>
+                    <div class="param-item">
+                        <span class="param-name">400 Bad Request</span>
+                        <div>Invalid request data</div>
+                    </div>
+                    <div class="param-item">
+                        <span class="param-name">401 Unauthorized</span>
+                        <div>Missing or invalid API key / credentials</div>
+                    </div>
+                    <div class="param-item">
+                        <span class="param-name">404 Not Found</span>
+                        <div>Endpoint does not exist</div>
+                    </div>
+                    <div class="param-item">
+                        <span class="param-name">500 Internal Server Error</span>
+                        <div>Server error</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Posture Monitoring System API v1.0</p>
+            <p>© 2025 - Built with ❤️ for better posture</p>
+        </div>
+    </div>
+</body>
+
+</html>

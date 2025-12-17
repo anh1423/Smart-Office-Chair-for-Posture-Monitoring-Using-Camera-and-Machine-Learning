@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}Analytics - Posture Monitoring{% endblock %}
+
+{% block content %}
+<div class="analytics-container">
+    <!-- Left Column: Statistics and Chart -->
+    <div class="analytics-left">
+        <!-- Today's Statistics -->
+        <div class="stats-section card">
+            <h2 data-i18n="analytics.today_statistics">📊 Today's Statistics</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalDetections">0</div>
+                    <div class="stat-label" data-i18n="analytics.total_detections">Total Detections</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="correctRate">0%</div>
+                    <div class="stat-label" data-i18n="analytics.correct_posture_rate">Correct Posture Rate</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalWarnings">0</div>
+                    <div class="stat-label" data-i18n="analytics.warnings">Warnings</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="badPostures">0</div>
+                    <div class="stat-label" data-i18n="analytics.bad_postures">Bad Postures</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Posture Distribution Chart -->
+        <div class="chart-section card">
+            <h2 data-i18n="analytics.posture_distribution">📈 Posture Distribution</h2>
+            <canvas id="postureChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Right Column: Controls and Status -->
+    <div class="analytics-right">
+        <!-- Current Status (shown first) -->
+        <div class="status-section card">
+            <h2 data-i18n="analytics.current_status">📍 Current Status</h2>
+            <div class="current-posture">
+                <div class="posture-label" id="currentPosture" data-i18n="analytics.waiting_data">Waiting for data...
+                </div>
+                <div class="posture-confidence" id="currentConfidence">--%</div>
+            </div>
+            <div class="last-update">
+                <span data-i18n="analytics.last_update">Last update:</span> <span id="lastUpdate">--:--:--</span>
+            </div>
+        </div>
+
+        <!-- Detection Mode (admin only) -->
+        {% if current_user.role == 'admin' %}
+        <div class="mode-section card">
+            <h2 data-i18n="analytics.detection_mode">⚙️ Detection Mode</h2>
+            <div class="mode-options">
+                <label class="mode-option">
+                    <input type="radio" name="mode" value="sensor_only">
+                    <div class="mode-card">
+                        <div class="mode-icon">📊</div>
+                        <h3 data-i18n="analytics.sensor_only">Sensor Only</h3>
+                        <p data-i18n="analytics.sensor_only_desc">Use only 7 pressure sensors</p>
+                    </div>
+                </label>
+                <label class="mode-option">
+                    <input type="radio" name="mode" value="camera_only">
+                    <div class="mode-card">
+                        <div class="mode-icon">📷</div>
+                        <h3 data-i18n="analytics.camera_only">Camera Only</h3>
+                        <p data-i18n="analytics.camera_only_desc">Use only camera for detection</p>
+                    </div>
+                </label>
+                <label class="mode-option">
+                    <input type="radio" name="mode" value="auto" checked>
+                    <div class="mode-card">
+                        <div class="mode-icon">🎯</div>
+                        <h3 data-i18n="analytics.auto_smart">Auto Smart</h3>
+                        <p data-i18n="analytics.auto_smart_desc">Sensor first, camera when needed</p>
+                    </div>
+                </label>
+                <label class="mode-option">
+                    <input type="radio" name="mode" value="fusion">
+                    <div class="mode-card">
+                        <div class="mode-icon">🔄</div>
+                        <h3 data-i18n="analytics.fusion">Fusion</h3>
+                        <p data-i18n="analytics.fusion_desc">Combine sensor and camera</p>
+                    </div>
+                </label>
+            </div>
+            <button id="saveConfigBtn" class="btn-primary" data-i18n="analytics.save_configuration">💾 Save
+                Configuration</button>
+        </div>
+        {% endif %}
+
+        <!-- Alerts Section (hidden by default) -->
+        <div class="alerts-section card" id="alertsSection" style="display: none;">
+            <h2 data-i18n="analytics.posture_alert">⚠️ Posture Alert</h2>
+            <div class="alert-message">
+                <p data-i18n="analytics.bad_posture_message">Bad posture detected! Please adjust your sitting position.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{{ url_for('static', filename='js/analytics.js') }}"></script>
+{% endblock %}

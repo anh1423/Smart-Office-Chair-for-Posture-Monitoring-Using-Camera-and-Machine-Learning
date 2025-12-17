@@ -1,0 +1,279 @@
+{% extends "base.html" %}
+
+{% block title %}Advanced Analytics - Admin{% endblock %}
+
+{% block content %}
+<div class="admin-analytics-container">
+    <!-- Header -->
+    <div class="analytics-header">
+        <h1 data-i18n="admin_analytics.title">🎯 Advanced Analytics Dashboard</h1>
+        <div class="header-actions">
+            <button class="btn-secondary" id="exportBtn" data-i18n="admin_analytics.export_data">📥 Export Data</button>
+        </div>
+    </div>
+
+    <!-- Time Range Selector -->
+    <div class="time-selector card">
+        <div class="selector-buttons">
+            <button class="time-btn active" data-period="day" data-i18n="admin_analytics.today">Today</button>
+            <button class="time-btn" data-period="week" data-i18n="admin_analytics.last_7_days">Last 7 Days</button>
+            <button class="time-btn" data-period="month" data-i18n="admin_analytics.last_30_days">Last 30 Days</button>
+            <button class="time-btn" data-period="custom" data-i18n="admin_analytics.custom_range">Custom Range</button>
+        </div>
+        <div class="custom-range" id="customRange" style="display: none;">
+            <input type="date" id="startDate">
+            <span>to</span>
+            <input type="date" id="endDate">
+            <button class="btn-primary" id="applyCustom">Apply</button>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="stats-cards">
+        <div class="stat-card-large">
+            <div class="stat-icon">📊</div>
+            <div class="stat-content">
+                <div class="stat-value" id="totalDetections">0</div>
+                <div class="stat-label" data-i18n="admin_analytics.total_detections">TOTAL DETECTIONS</div>
+            </div>
+        </div>
+        <div class="stat-card-large">
+            <div class="stat-icon">✅</div>
+            <div class="stat-content">
+                <div class="stat-value" id="correctRate">0%</div>
+                <div class="stat-label" data-i18n="admin_analytics.correct_posture_rate">CORRECT POSTURE RATE</div>
+            </div>
+        </div>
+        <div class="stat-card-large">
+            <div class="stat-icon">⚠️</div>
+            <div class="stat-content">
+                <div class="stat-value" id="totalWarnings">0</div>
+                <div class="stat-label" data-i18n="admin_analytics.total_warnings">TOTAL WARNINGS</div>
+            </div>
+        </div>
+        <div class="stat-card-large">
+            <div class="stat-icon">❌</div>
+            <div class="stat-content">
+                <div class="stat-value" id="badPostures">0</div>
+                <div class="stat-label" data-i18n="admin_analytics.bad_postures">BAD POSTURES</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Grid -->
+    <div class="charts-grid">
+        <div class="chart-card card">
+            <h3 data-i18n="admin_analytics.posture_distribution">📈 Posture Distribution</h3>
+            <canvas id="postureDistChart"></canvas>
+        </div>
+        <div class="chart-card card">
+            <h3 data-i18n="admin_analytics.daily_trend">📊 Daily Trend</h3>
+            <canvas id="dailyTrendChart"></canvas>
+        </div>
+        <div class="chart-card card">
+            <h3 data-i18n="admin_analytics.warning_frequency">⚠️ Warning Frequency</h3>
+            <canvas id="warningFreqChart"></canvas>
+        </div>
+        <div class="chart-card card">
+            <h3 data-i18n="admin_analytics.detection_mode_usage">🎯 Detection Mode Usage</h3>
+            <canvas id="modeDistChart"></canvas>
+        </div>
+    </div>
+
+    <!-- AI Model Performance Section -->
+
+    <!-- Sensor Visualization Section -->
+    <div class="sensor-viz-section">
+        <h2 class="section-title" data-i18n="admin_analytics.realtime_sensor">📊 Real-time Sensor Visualization</h2>
+
+        <div class="sensor-grid">
+            <!-- Radar Chart -->
+            <div class="sensor-card card">
+                <h3 data-i18n="admin_analytics.pressure_radar">🕸️ Pressure Distribution (Radar)</h3>
+                <p class="sensor-desc" data-i18n="admin_analytics.pressure_radar_desc">Real-time 7-sensor pressure
+                    visualization</p>
+                <canvas id="sensorRadarChart"></canvas>
+            </div>
+
+            <!-- Seat Heatmap -->
+            <div class="sensor-card card">
+                <h3 data-i18n="admin_analytics.seat_heatmap">🔥 Seat Heatmap</h3>
+                <p class="sensor-desc" data-i18n="admin_analytics.seat_heatmap_desc">Visual pressure distribution on
+                    chair</p>
+                <div class="heatmap-container">
+                    <svg id="seatHeatmap" viewBox="0 0 300 400">
+                        <!-- Chair outline -->
+                        <rect x="50" y="50" width="200" height="250" rx="20" fill="none" stroke="#475569"
+                            stroke-width="2" />
+                        <!-- Backrest -->
+                        <rect x="50" y="50" width="200" height="150" rx="20" fill="none" stroke="#475569"
+                            stroke-width="2" />
+                        <!-- Seat -->
+                        <rect x="50" y="200" width="200" height="100" rx="20" fill="none" stroke="#475569"
+                            stroke-width="2" />
+
+                        <!-- Sensor positions -->
+                        <!-- S7 (Left shoulder) -->
+                        <circle id="sensor7" cx="90" cy="100" r="25" fill="#3b82f6" opacity="0.6" />
+                        <text x="90" y="105" text-anchor="middle" fill="white" font-size="12"
+                            font-weight="bold">S7</text>
+
+                        <!-- S6 (Right shoulder) -->
+                        <circle id="sensor6" cx="210" cy="100" r="25" fill="#3b82f6" opacity="0.6" />
+                        <text x="210" y="105" text-anchor="middle" fill="white" font-size="12"
+                            font-weight="bold">S6</text>
+
+                        <!-- S5 (Lower back) -->
+                        <circle id="sensor5" cx="150" cy="170" r="25" fill="#3b82f6" opacity="0.6" />
+                        <text x="150" y="175" text-anchor="middle" fill="white" font-size="12"
+                            font-weight="bold">S5</text>
+
+                        <!-- S1 (Left rear seat) -->
+                        <circle id="sensor1" cx="90" cy="240" r="25" fill="#3b82f6" opacity="0.6" />
+                        <text x="90" y="245" text-anchor="middle" fill="white" font-size="12"
+                            font-weight="bold">S1</text>
+
+                        <!-- S2 (Right rear seat) -->
+                        <circle id="sensor2" cx="210" cy="240" r="25" fill="#3b82f6" opacity="0.6" />
+                        <text x="210" y="245" text-anchor="middle" fill="white" font-size="12"
+                            font-weight="bold">S2</text>
+
+                        <!-- S3 (Left front seat) -->
+                        <circle id="sensor3" cx="90" cy="270" r="25" fill="#3b82f6" opacity="0.6" />
+                        <text x="90" y="275" text-anchor="middle" fill="white" font-size="12"
+                            font-weight="bold">S3</text>
+
+                        <!-- S4 (Right front seat) -->
+                        <circle id="sensor4" cx="210" cy="270" r="25" fill="#3b82f6" opacity="0.6" />
+                        <text x="210" y="275" text-anchor="middle" fill="white" font-size="12"
+                            font-weight="bold">S4</text>
+                    </svg>
+                    <div class="heatmap-legend">
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #3b82f6;"></div>
+                            <span data-i18n="admin_analytics.pressure_low">Low (0-1000)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #10b981;"></div>
+                            <span data-i18n="admin_analytics.pressure_medium">Medium (1000-2000)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #f59e0b;"></div>
+                            <span data-i18n="admin_analytics.pressure_high">High (2000-3000)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #ef4444;"></div>
+                            <span data-i18n="admin_analytics.pressure_very_high">Very High (3000+)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sensor History Graph -->
+        <div class="sensor-history card">
+            <h3 data-i18n="admin_analytics.sensor_history">📈 Sensor History</h3>
+            <canvas id="sensorHistoryChart"></canvas>
+        </div>
+    </div>
+    <div class="ai-performance-section">
+        <h2 class="section-title" data-i18n="admin_analytics.ai_performance">🤖 AI Model Performance Analysis</h2>
+
+        <div class="ai-stats-grid">
+            <!-- Camera Activation Stats -->
+            <div class="ai-card card">
+                <h3 data-i18n="admin_analytics.camera_activation">📸 Camera Activation (Auto Mode)</h3>
+                <div class="activation-stats">
+                    <div class="activation-item">
+                        <span class="activation-label" data-i18n="admin_analytics.sensor_only">Sensor Only</span>
+                        <span class="activation-value" id="sensorOnlyCount">0</span>
+                        <span class="activation-percent" id="sensorOnlyPercent">0%</span>
+                    </div>
+                    <div class="activation-item camera">
+                        <span class="activation-label" data-i18n="admin_analytics.camera_activated">Camera
+                            Activated</span>
+                        <span class="activation-value" id="cameraActivatedCount">0</span>
+                        <span class="activation-percent" id="cameraActivatedPercent">0%</span>
+                    </div>
+                </div>
+                <canvas id="cameraActivationChart"></canvas>
+            </div>
+
+            <!-- Confidence Comparison -->
+            <div class="ai-card card">
+                <h3 data-i18n="admin_analytics.confidence_comparison">🎯 Confidence Score Comparison</h3>
+                <div class="confidence-summary">
+                    <div class="conf-item">
+                        <span class="conf-label" data-i18n="admin_analytics.sensor_average">Sensor Average</span>
+                        <span class="conf-value sensor" id="sensorAvgConf">0%</span>
+                    </div>
+                    <div class="conf-item">
+                        <span class="conf-label" data-i18n="admin_analytics.camera_average">Camera Average</span>
+                        <span class="conf-value camera" id="cameraAvgConf">0%</span>
+                    </div>
+                </div>
+                <canvas id="confidenceCompChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Fusion Decision Log -->
+        <div class="fusion-log card">
+            <h3 data-i18n="admin_analytics.fusion_log">🔄 Fusion Decision Log</h3>
+            <p class="fusion-desc" data-i18n="admin_analytics.fusion_log_desc">Cases where sensor and camera had
+                different predictions</p>
+            <div class="table-container">
+                <table class="fusion-table">
+                    <thead>
+                        <tr>
+                            <th data-i18n="admin_analytics.fusion_table_time">Time</th>
+                            <th data-i18n="admin_analytics.fusion_table_sensor">Sensor Conf</th>
+                            <th data-i18n="admin_analytics.fusion_table_camera">Camera Conf</th>
+                            <th data-i18n="admin_analytics.fusion_table_decision">Final Decision</th>
+                            <th data-i18n="admin_analytics.fusion_table_reason">Reason</th>
+                        </tr>
+                    </thead>
+                    <tbody id="fusionLogBody">
+                        <tr>
+                            <td colspan="5" class="no-data" data-i18n="admin_analytics.no_fusion">No fusion decisions
+                                recorded</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+</div>
+
+<!-- Export Modal -->
+<div class="modal" id="exportModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>📥 Export Data</h2>
+            <button class="modal-close" onclick="closeExportModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="exportFormat">Export Format:</label>
+                <select id="exportFormat">
+                    <option value="excel">Excel (.xlsx)</option>
+                    <option value="csv">CSV (.csv)</option>
+                </select>
+            </div>
+            <p class="export-info">
+                Export data for current time range: <span id="exportRange"></span>
+            </p>
+        </div>
+        <div class="modal-actions">
+            <button class="btn-secondary" id="cancelExport">Cancel</button>
+            <button class="btn-primary" id="confirmExport">Download</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{{ url_for('static', filename='js/admin_analytics.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}Advanced Analytics - Admin{% endblock %}
+
+{% block content %}
+<div class="admin-analytics-container">
+    <!-- Header -->
+    <div class="analytics-header">
+        <h1>🎯 Advanced Analytics Dashboard</h1>
+        <div class="header-actions">
+            <button class="btn-secondary" id="exportBtn">📥 Export Data</button>
+        </div>
+    </div>
+
+    <!-- Time Range Selector -->
+    <div class="time-selector card">
+        <div class="selector-buttons">
+            <button class="time-btn active" data-period="day">Today</button>
+            <button class="time-btn" data-period="week">Last 7 Days</button>
+            <button class="time-btn" data-period="month">Last 30 Days</button>
+            <button class="time-btn" data-period="custom">Custom Range</button>
+        </div>
+        <div class="custom-range" id="customRange" style="display: none;">
+            <input type="date" id="startDate">
+            <span>to</span>
+            <input type="date" id="endDate">
+            <button class="btn-primary" id="applyCustom">Apply</button>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="stats-cards">
+        <div class="stat-card-large">
+            <div class="stat-icon">📊</div>
+            <div class="stat-content">
+                <div class="stat-value" id="totalDetections">0</div>
+                <div class="stat-label">Total Detections</div>
+            </div>
+        </div>
+        <div class="stat-card-large">
+            <div class="stat-icon">✅</div>
+            <div class="stat-content">
+                <div class="stat-value" id="correctRate">0%</div>
+                <div class="stat-label">Correct Posture Rate</div>
+            </div>
+        </div>
+        <div class="stat-card-large">
+            <div class="stat-icon">⚠️</div>
+            <div class="stat-content">
+                <div class="stat-value" id="totalWarnings">0</div>
+                <div class="stat-label">Total Warnings</div>
+            </div>
+        </div>
+        <div class="stat-card-large">
+            <div class="stat-icon">❌</div>
+            <div class="stat-content">
+                <div class="stat-value" id="badPostures">0</div>
+                <div class="stat-label">Bad Postures</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Grid -->
+    <div class="charts-grid">
+        <!-- Posture Distribution -->
+        <div class="chart-card card">
+            <h3>📈 Posture Distribution</h3>
+            <canvas id="postureDistChart"></canvas>
+        </div>
+
+        <!-- Daily Trend -->
+        <div class="chart-card card">
+            <h3>📊 Daily Trend</h3>
+            <canvas id="dailyTrendChart"></canvas>
+        </div>
+
+        <!-- Warning Frequency -->
+        <div class="chart-card card">
+            <h3>⚠️ Warning Frequency</h3>
+            <canvas id="warningFreqChart"></canvas>
+        </div>
+
+        <!-- Mode Distribution -->
+        <div class="chart-card card">
+            <h3>🎯 Detection Mode Usage</h3>
+            <canvas id="modeDistChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Export Modal -->
+<div class="modal" id="exportModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Export Data</h2>
+            <button class="modal-close" id="closeExportModal">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label>Format</label>
+                <select id="exportFormat">
+                    <option value="excel">Excel (.xlsx)</option>
+                    <option value="csv">CSV (.csv)</option>
+                </select>
+            </div>
+            <p class="export-info">
+                Export data for current time range: <span id="exportRange"></span>
+            </p>
+        </div>
+        <div class="modal-actions">
+            <button class="btn-secondary" id="cancelExport">Cancel</button>
+            <button class="btn-primary" id="confirmExport">Download</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{{ url_for('static', filename='js/admin_analytics.js') }}"></script>
+{% endblock %}

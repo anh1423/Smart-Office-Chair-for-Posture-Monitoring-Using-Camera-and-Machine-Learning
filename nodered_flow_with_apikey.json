@@ -1,0 +1,280 @@
+[
+    {
+        "id": "31dcb45e7e8a44dd",
+        "type": "tab",
+        "label": "Flow 1 - Posture Detection",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "d3ee3c812b340e0b",
+        "type": "mqtt in",
+        "z": "31dcb45e7e8a44dd",
+        "name": "ESP32 Sensor Data",
+        "topic": "esp32/fsrsensor",
+        "qos": "0",
+        "datatype": "json",
+        "broker": "mqtt_broker",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 250,
+        "y": 160,
+        "wires": [
+            [
+                "b6de825cfed27df0"
+            ]
+        ]
+    },
+    {
+        "id": "b6de825cfed27df0",
+        "type": "function",
+        "z": "31dcb45e7e8a44dd",
+        "name": "Prepare API Request",
+        "func": "// msg.payload đã là JSON object từ ESP32\n// Ví dụ: {\"sensor1\": 100, \"sensor2\": 150, ...}\n\n// Log để debug\nnode.warn(\"Received sensor data: \" + JSON.stringify(msg.payload));\n\n// Chuyển tiếp trực tiếp\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 480,
+        "y": 160,
+        "wires": [
+            [
+                "afc6fee4bd2296cb"
+            ]
+        ]
+    },
+    {
+        "id": "afc6fee4bd2296cb",
+        "type": "http request",
+        "z": "31dcb45e7e8a44dd",
+        "name": "POST to Webserver",
+        "method": "POST",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "http://localhost:5000/api/predict",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [
+            {
+                "keyType": "other",
+                "keyValue": "X-API-Key",
+                "valueType": "other",
+                "valueValue": "ccd3025f526778587f099066700bba29671c9cd063a4b543af6e626e618374dd"
+            }
+        ],
+        "x": 720,
+        "y": 160,
+        "wires": [
+            [
+                "d60772125c1ae1f6"
+            ]
+        ]
+    },
+    {
+        "id": "d60772125c1ae1f6",
+        "type": "function",
+        "z": "31dcb45e7e8a44dd",
+        "name": "Parse Response",
+        "func": "// msg.payload từ webserver\n// {\"label\": \"Correct_posture\", \"confidence\": 0.95, \"warning\": false, ...}\n\nvar result = {\n    label: msg.payload.label,\n    warning: msg.payload.warning,\n    confidence: msg.payload.confidence,\n    mode: msg.payload.mode\n};\n\n// Log để debug\nnode.warn(\"Prediction result: \" + JSON.stringify(result));\n\nmsg.payload = result;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 950,
+        "y": 160,
+        "wires": [
+            [
+                "a429d4cd353ac373"
+            ]
+        ]
+    },
+    {
+        "id": "a429d4cd353ac373",
+        "type": "mqtt out",
+        "z": "31dcb45e7e8a44dd",
+        "name": "Send to ESP32",
+        "topic": "esp32/recognitionresult",
+        "qos": "0",
+        "retain": "false",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "mqtt_broker",
+        "x": 1200,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "bcd8e516f5d135ee",
+        "type": "tab",
+        "label": "Battery Simple",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "abd6c9f567996fd9",
+        "type": "mqtt in",
+        "z": "bcd8e516f5d135ee",
+        "name": "Battery MQTT",
+        "topic": "esp32/battery",
+        "qos": "1",
+        "datatype": "auto",
+        "broker": "mqtt_broker",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 130,
+        "y": 100,
+        "wires": [
+            [
+                "58e0f19554ed6b42"
+            ]
+        ]
+    },
+    {
+        "id": "58e0f19554ed6b42",
+        "type": "function",
+        "z": "bcd8e516f5d135ee",
+        "name": "Process Battery",
+        "func": "// Parse if string\nlet data = msg.payload;\nif (typeof data === 'string') {\n    try {\n        data = JSON.parse(data);\n    } catch(e) {\n        node.error('Failed to parse JSON: ' + e.message);\n        return null;\n    }\n}\n\n// Validate\nif (!data || !data.voltage) {\n    node.error('Invalid data: ' + JSON.stringify(data));\n    return null;\n}\n\nconst voltage = parseFloat(data.voltage);\n\n// Calculate percentage\nconst minV = 3.0;\nconst maxV = 4.2;\nlet pct = ((voltage - minV) / (maxV - minV)) * 100;\npct = Math.max(0, Math.min(100, pct));\n\n// Determine level\nlet level = 'critical';\nif (pct > 75) level = 'high';\nelse if (pct > 50) level = 'medium';\nelse if (pct > 25) level = 'low';\n\n// Format for webserver (no status field)\nmsg.payload = {\n    voltage: voltage.toFixed(3),\n    percentage: pct.toFixed(1),\n    level: level,\n    timestamp: new Date().toISOString()\n};\n\nmsg.headers = {\n    'Content-Type': 'application/json'\n};\n\nnode.status({fill:\"green\",shape:\"dot\",text:`${voltage}V ${pct.toFixed(0)}%`});\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 340,
+        "y": 100,
+        "wires": [
+            [
+                "d43e25012a3a266f",
+                "6af59daeb318f96d"
+            ]
+        ]
+    },
+    {
+        "id": "d43e25012a3a266f",
+        "type": "http request",
+        "z": "bcd8e516f5d135ee",
+        "name": "POST to Webserver",
+        "method": "POST",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "http://localhost:5000/api/battery",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [
+            {
+                "keyType": "other",
+                "keyValue": "X-API-Key",
+                "valueType": "other",
+                "valueValue": "ccd3025f526778587f099066700bba29671c9cd063a4b543af6e626e618374dd"
+            }
+        ],
+        "x": 570,
+        "y": 100,
+        "wires": [
+            [
+                "e653e9df1ae94746"
+            ]
+        ]
+    },
+    {
+        "id": "e653e9df1ae94746",
+        "type": "function",
+        "z": "bcd8e516f5d135ee",
+        "name": "Check Response",
+        "func": "if (msg.statusCode === 200) {\n    node.status({fill:\"green\",shape:\"dot\",text:\"Saved\"});\n} else {\n    node.status({fill:\"red\",shape:\"dot\",text:\"Error \" + msg.statusCode});\n    node.error('Webserver error: ' + msg.statusCode + ' - ' + msg.payload);\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 780,
+        "y": 100,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "6af59daeb318f96d",
+        "type": "debug",
+        "z": "bcd8e516f5d135ee",
+        "name": "Debug",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 570,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "907283fb479448a2",
+        "type": "inject",
+        "z": "bcd8e516f5d135ee",
+        "name": "Test",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "{\"voltage\":3.85}",
+        "payloadType": "json",
+        "x": 130,
+        "y": 160,
+        "wires": [
+            [
+                "58e0f19554ed6b42"
+            ]
+        ]
+    },
+    {
+        "id": "mqtt_broker",
+        "type": "mqtt-broker",
+        "name": "Local MQTT Broker",
+        "broker": "192.168.101.192",
+        "port": "1883",
+        "clientid": "nodered_client",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": 4,
+        "keepalive": 15,
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    }
+]

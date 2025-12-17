@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}User Management - Posture Monitoring{% endblock %}
+
+{% block content %}
+<div class="users-container">
+    <div class="users-header">
+        <h1 data-i18n="users.title">👥 User Management</h1>
+        <button class="btn-primary" id="addUserBtn" data-i18n="users.add_user">+ Add User</button>
+    </div>
+
+    <div class="search-bar">
+        <input type="text" id="searchInput" data-i18n-attr="placeholder" data-i18n="users.search"
+            placeholder="Search users...">
+    </div>
+
+    <div class="users-table-container">
+        <table class="users-table">
+            <thead>
+                <tr>
+                    <th data-i18n="users.username">Username</th>
+                    <th data-i18n="users.email">Email</th>
+                    <th data-i18n="users.role">Role</th>
+                    <th data-i18n="users.status">Status</th>
+                    <th data-i18n="users.created">Created</th>
+                    <th data-i18n="users.actions">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="usersTableBody">
+                <tr>
+                    <td colspan="6" class="loading">Loading users...</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Add/Edit User Modal -->
+<div class="modal" id="userModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 id="modalTitle">Add New User</h2>
+            <button class="modal-close" id="closeModal">&times;</button>
+        </div>
+        <form id="userForm">
+            <div class="form-group">
+                <label for="username">Username *</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email">
+            </div>
+            <div class="form-group">
+                <label for="password">Password *</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <div class="form-group">
+                <label for="role">Role</label>
+                <select id="role" name="role">
+                    <option value="user">User</option>
+                    <option value="admin">Admin</option>
+                </select>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn-secondary" id="cancelBtn">Cancel</button>
+                <button type="submit" class="btn-primary">Create User</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal" id="deleteModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Confirm Delete</h2>
+            <button class="modal-close" id="closeDeleteModal">&times;</button>
+        </div>
+        <p>Are you sure you want to delete this user? This action cannot be undone.</p>
+        <div class="modal-actions">
+            <button type="button" class="btn-secondary" id="cancelDeleteBtn">Cancel</button>
+            <button type="button" class="btn-danger" id="confirmDeleteBtn">Delete</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/users.js') }}"></script>
+{% endblock %}

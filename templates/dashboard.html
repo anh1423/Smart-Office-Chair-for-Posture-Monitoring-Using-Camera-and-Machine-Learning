@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Posture Monitoring{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="camera-section">
+        <div class="section-header">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <rect x="2" y="4" width="20" height="14" rx="2" stroke="currentColor" stroke-width="2" />
+                <circle cx="12" cy="11" r="3" stroke="currentColor" stroke-width="2" />
+            </svg>
+            <h2 data-i18n="dashboard.live_camera">Live Camera</h2>
+        </div>
+
+        <div class="camera-container">
+            <div class="camera-overlay" id="videoOverlay">
+                <p>📷 Loading camera...</p>
+            </div>
+            <img id="videoStream" src="{{ url_for('api.video_feed') }}" alt="Live Camera Feed">
+        </div>
+
+        <div class="camera-status">
+            <span class="camera-dot" id="cameraDot"></span>
+            <span class="camera-text" data-i18n="dashboard.camera">Camera: <span id="cameraStatus"
+                    data-i18n="dashboard.connecting">Connecting...</span></span>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}
