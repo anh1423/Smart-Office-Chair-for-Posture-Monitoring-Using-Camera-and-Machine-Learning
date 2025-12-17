@@ -307,8 +307,7 @@ For issues:
 ---
 
 **Version**: 1.0.0  
-**Last Updated**: December 2024  
-**Python**: 3.12+ | 3.13+  
+**Last Updated**: December 2025: D**Python**: 3.12+ | 3.13+  
 **Platform**: Raspberry Pi 5
 
 **Made with ❤️ for better posture health**
