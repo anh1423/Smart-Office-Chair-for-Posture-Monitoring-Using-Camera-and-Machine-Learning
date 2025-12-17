@@ -307,7 +307,7 @@ For issues:
 ---
 
 **Version**: 1.0.0  
-**Last Updated**: December 2025
+**Last Updated**: December 2025 
 **Python**: 3.12+ | 3.13+  
 **Platform**: Raspberry Pi 5
 
